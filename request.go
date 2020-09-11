@@ -697,6 +697,7 @@ func (r *Request) Execute(method, url string) (*Response, error) {
 	err = Backoff(
 		func() (*Response, error) {
 			attempt++
+			r.RetryAttempt = attempt
 
 			r.URL = r.selectAddr(addrs, url, attempt)
 
@@ -712,8 +713,6 @@ func (r *Request) Execute(method, url string) (*Response, error) {
 		MaxWaitTime(r.client.RetryMaxWaitTime),
 		RetryConditions(r.client.RetryConditions),
 	)
-
-	r.RetryAttempt = attempt
 
 	return resp, unwrapNoRetryErr(err)
 }
